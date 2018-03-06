@@ -7,6 +7,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +26,7 @@ public class ServerApplication {
 
     @GetMapping
     ResponseEntity<?> getMessage() {
-        return ResponseEntity.ok("Hey, welcome!");
+        return ResponseEntity.ok("Hey, welcome " + SecurityContextHolder.getContext().getAuthentication().getName() + "!");
     }
 
     @EnableWebSecurity
@@ -31,6 +37,14 @@ public class ServerApplication {
 
             // Turn off CSRF and session management for this REST service.
             http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+
+            http.x509().userDetailsService(new UserDetailsService() {
+                @Override
+                public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                    return new User(username, "", AuthorityUtils.commaSeparatedStringToAuthorityList("USER"));
+                }
+            });
+
         }
     }
 
