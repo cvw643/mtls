@@ -6,7 +6,7 @@ mvn clean package
 sh clean.sh
 sh genkey.sh
 mvn clean package
-java -jar server/target/server-1.0-SNAPSHOT.jar
+java -jar server/target/mtls-server-1.0-SNAPSHOT.jar
 ```
 
 - Use your browser to connect the server
